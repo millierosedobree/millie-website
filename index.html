@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Millie Rose Dobree</title>
+
+<style>
+body {
+    background: white;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    padding: 8%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+}
+
+#text {
+    white-space: pre-wrap;
+    max-width: 600px;
+}
+
+#light {
+    position: fixed;
+    width: 70px;
+    height: 70px;
+    border-radius: 0;
+    pointer-events: none;
+    background: url("Asset 1.png") center center / contain no-repeat;
+    transform: translate(-50%, -50%);
+    animation: light-breathe 4s ease-in-out infinite;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.letter {
+    color: black;
+    transform: scale(1);
+    transition: color 0.5s ease, transform 0.5s ease;
+    transition-delay: var(--reveal-delay, 0s);
+}
+
+.revealed {
+    color: #d0d0d0;
+}
+
+.revealed-active {
+    transform: scale(1.06);
+}
+
+.heading-main {
+    font-size: 1.6em;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+}
+
+.heading-section {
+    font-weight: bold;
+}
+
+.link-email,
+.link-instagram {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: #aaaaaa;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}
+
+#hint.hidden {
+    opacity: 0;
+}
+
+#progress-container {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 3px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+#progress-bar {
+    width: 0%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    transition: width 0.3s ease;
+}
+
+#light.burst {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+@keyframes light-breathe {
+    0% { opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    100% { opacity: 0.95; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (any-pointer: fine) {
+    body {
+        cursor: none;
+    }
+}
+
+@media (pointer: coarse) {
+    #light {
+        display: none;
+    }
+    #hint {
+        display: none;
+    }
+    #progress-container {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        padding: 10% 6%;
+    }
+
+    #light {
+        width: 60px;
+        height: 60px;
+    }
+
+    #text {
+        max-width: 100%;
+        text-align: left;
+    }
+
+    .heading-main {
+        font-size: 1.9em;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="light"></div>
+
+<div id="hint">Move your finger or mouse to reveal</div>
+<div id="progress-container">
+    <div id="progress-bar"></div>
+</div>
+
+<div id="text">
+Millie Rose Dobree
+
+Born 26th July 1998, London
+Based in London
+
++44 7514 627163
+millierosedobree@gmail.com
+@millierosedobree
+
+Education
+MFA Fine Art, Goldsmiths University, London (UK) 2026
+BA VAV-audiovisual, Gerrit Rietveld Academie, Amsterdam (NL) 2021
+Exchange programme, The Cooper Union, New York (US) 2019
+Foundation Diploma in Art and Design, Kingston University, London (UK) 2017
+
+
+
+
+</div>
+
+<script>
+const textContainer = document.getElementById("text");
+const light = document.getElementById("light");
+const hint = document.getElementById("hint");
+const progressBar = document.getElementById("progress-bar");
+
+// Split into letters
+const originalText = textContainer.innerText;
+textContainer.innerHTML = originalText.split("")
+    .map(char => `<span class="letter">${char}</span>`)
+    .join("");
+
+const letters = document.querySelectorAll(".letter");
+const lettersArray = Array.from(letters);
+
+// Highlight specific semantic parts (name, section headings)
+const nameString = "Millie Rose Dobree";
+const sectionHeading = "Education";
+const emailString = "millierosedobree@gmail.com";
+const handleString = "@millierosedobree";
+
+function applyClassToRange(text, target, className) {
+    const start = text.indexOf(target);
+    if (start === -1) return;
+    const end = start + target.length;
+    for (let i = start; i < end && i < lettersArray.length; i++) {
+        lettersArray[i].classList.add(className);
+    }
+}
+
+applyClassToRange(originalText, nameString, "heading-main");
+applyClassToRange(originalText, sectionHeading, "heading-section");
+
+function makeInteractiveRange(text, target, className, onClick) {
+    const start = text.indexOf(target);
+    if (start === -1) return;
+    const end = start + target.length;
+    for (let i = start; i < end && i < lettersArray.length; i++) {
+        const letter = lettersArray[i];
+        letter.classList.add(className);
+        letter.addEventListener("click", (e) => {
+            e.stopPropagation();
+            onClick();
+        });
+    }
+}
+
+makeInteractiveRange(originalText, emailString, "link-email", () => {
+    window.location.href = "mailto:millierosedobree@gmail.com";
+});
+
+makeInteractiveRange(originalText, handleString, "link-instagram", () => {
+    window.open("https://instagram.com/millierosedobree", "_blank");
+});
+
+const revealableLetters = lettersArray.filter(l => l.textContent.trim() !== "");
+const totalRevealable = revealableLetters.length;
+
+const isCoarsePointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+const BASE_REVEAL_RADIUS = isCoarsePointer ? 70 : 45;
+let currentRadius = BASE_REVEAL_RADIUS;
+
+let targetX = window.innerWidth / 2;
+let targetY = window.innerHeight / 2;
+let currentX = targetX;
+let currentY = targetY;
+let hasPointerMoved = false;
+let lastPointerTime = null;
+let lastPointerX = null;
+let lastPointerY = null;
+
+let revealTimestamps = new WeakMap();
+let lastRehideCheck = 0;
+let lastActivityTime = performance.now();
+
+function updateLightAndReveal(x, y) {
+    light.style.left = x + "px";
+    light.style.top = y + "px";
+
+    letters.forEach(letter => {
+        if (letter.classList.contains("revealed")) return;
+
+        const rect = letter.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const distance = Math.hypot(x - centerX, y - centerY);
+
+        if (distance < currentRadius) {
+            const now = performance.now();
+            revealTimestamps.set(letter, now);
+
+            // On touch devices, avoid delayed reveals (which can fire after a reset)
+            let delay = 0;
+            if (!isCoarsePointer) {
+                const verticalDiff = Math.abs(centerY - y);
+                delay = Math.min(verticalDiff * 0.0015, 0.3); // wave-like delay on desktop
+            }
+            letter.style.setProperty("--reveal-delay", `${delay}s`);
+
+            letter.classList.add("revealed");
+            letter.classList.add("revealed-active");
+
+            setTimeout(() => {
+                letter.classList.remove("revealed-active");
+            }, 250);
+        }
+    });
+
+    // Update progress bar
+    if (progressBar && totalRevealable > 0) {
+        const revealedCount = revealableLetters.filter(l => l.classList.contains("revealed")).length;
+        const percent = (revealedCount / totalRevealable) * 100;
+        progressBar.style.width = `${percent}%`;
+    }
+}
+
+function animateLight() {
+    const now = performance.now();
+
+    if (hasPointerMoved) {
+        const ease = isCoarsePointer ? 0.35 : 0.18; // faster response on touch
+        currentX += (targetX - currentX) * ease;
+        currentY += (targetY - currentY) * ease;
+        updateLightAndReveal(currentX, currentY);
+    }
+
+    // Gradually re-hide letters that haven't been touched recently
+    if (now - lastRehideCheck > 200) {
+        lastRehideCheck = now;
+        const fadeAfter = isCoarsePointer ? 3500 : 4000; // ms
+        revealableLetters.forEach(letter => {
+            const t = revealTimestamps.get(letter);
+            if (!t) return;
+            if (now - t > fadeAfter) {
+                letter.classList.remove("revealed");
+            }
+        });
+    }
+
+    // Hide light after inactivity (but don't hard-reset letters)
+    const INACTIVITY_FOR_LIGHT = 2000; // ms
+
+    if (now - lastActivityTime > INACTIVITY_FOR_LIGHT) {
+        light.style.opacity = "0";
+    } else {
+        light.style.opacity = "1";
+    }
+
+    requestAnimationFrame(animateLight);
+}
+
+// Start animation loop
+animateLight();
+
+// Use pointer events so it works on both mouse and touch devices
+document.addEventListener("pointermove", (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+    hasPointerMoved = true;
+    lastActivityTime = performance.now();
+
+    if (hint) {
+        hint.classList.add("hidden");
+    }
+
+    const now = performance.now();
+    if (lastPointerTime !== null && lastPointerX !== null && lastPointerY !== null) {
+        const dt = now - lastPointerTime;
+        const dx = e.clientX - lastPointerX;
+        const dy = e.clientY - lastPointerY;
+        const dist = Math.hypot(dx, dy);
+        const speed = dist / Math.max(dt, 1); // px per ms
+        const factor = isCoarsePointer ? 1.0 : 0.4;
+        const maxExtra = isCoarsePointer ? 80 : 40;
+        const extra = Math.min(speed * factor, maxExtra);
+        currentRadius = BASE_REVEAL_RADIUS + extra;
+    }
+    lastPointerTime = now;
+    lastPointerX = e.clientX;
+    lastPointerY = e.clientY;
+});
+
+document.addEventListener("pointerdown", (e) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+    hasPointerMoved = true;
+
+    if (hint) {
+        hint.classList.add("hidden");
+    }
+
+    // Burst effect on tap / click
+    light.classList.add("burst");
+    setTimeout(() => {
+        light.classList.remove("burst");
+    }, 220);
+
+    const now = performance.now();
+    lastPointerTime = now;
+    lastPointerX = e.clientX;
+    lastPointerY = e.clientY;
+    lastActivityTime = now;
+});
+
+// When the pointer/finger lifts, stop moving the light so no new letters are revealed
+document.addEventListener("pointerup", () => {
+    hasPointerMoved = false;
+    lastPointerTime = null;
+});
+
+document.addEventListener("pointercancel", () => {
+    hasPointerMoved = false;
+    lastPointerTime = null;
+});
+</script>
+
+</body>
+</html>
