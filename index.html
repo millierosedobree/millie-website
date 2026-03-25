@@ -9,21 +9,70 @@
 body {
     background: white;
     font-family: "Times New Roman", Times, serif;
-    font-size: 1.2rem;
-    line-height: 1.8;
-    padding: 8%;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0 8% 8%;
+    margin: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
     touch-action: none;
 }
 
-#text {
-    white-space: pre-wrap;
+#portfolio {
     max-width: 600px;
+    width: 100%;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+#name,
+#subtitle,
+#contact,
+#education {
+    text-align: center;
+}
+
+#name {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#subtitle {
+    margin-top: 0;
+}
+
+#subtitle {
+    font-family: "Times New Roman", Times, serif;
+    font-weight: normal;
+    font-size: 1.12rem;
+    line-height: 1.2;
+}
+
+#contact,
+#education {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 1.05rem;
+    white-space: pre-wrap;
+}
+
+#contact {
+    font-weight: bold;
+    line-height: 1;
+    margin: 0;
+}
+
+#education {
+    font-weight: normal;
+    line-height: 1;
+    margin: 0;
+}
+
+.spacer {
+    height: 1rem; /* "3 spaces" feel from the reference screenshot */
 }
 
 #light {
@@ -55,9 +104,9 @@ body {
 
 .heading-main {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.6em;
+    font-size: 3rem;
     font-weight: bold;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     color: cyan;
 }
 
@@ -140,9 +189,9 @@ body {
 
 @media (max-width: 600px) {
     body {
-        font-size: 1.05rem;
+        font-size: 0.95rem;
         line-height: 1.6;
-        padding: 10% 6%;
+        padding: 0 6% 10%;
     }
 
     #light {
@@ -150,13 +199,17 @@ body {
         height: 60px;
     }
 
-    #text {
-        max-width: 100%;
-        text-align: left;
+    #subtitle {
+        font-size: 1.02rem;
     }
 
     .heading-main {
-        font-size: 1.9em;
+        font-size: 2.3rem;
+    }
+
+    #contact,
+    #education {
+        font-size: 1rem;
     }
 }
 </style>
@@ -170,65 +223,106 @@ body {
     <div id="progress-bar"></div>
 </div>
 
-<div id="text">
-Millie Rose Dobree
+<div id="portfolio" aria-label="Artist portfolio">
+    <div id="name">Millie Rose Dobree</div>
+    <div id="subtitle">Born and based in London</div>
 
-Born 26th July 1998, London
-Based in London
+    <div class="spacer"></div>
 
+    <div id="contact">
 +44 7514 627163
 millierosedobree@gmail.com
 @millierosedobree
+    </div>
 
+    <div id="education">
 MFA Fine Art, Goldsmiths University, London (UK) 2026
 BA VAV-audiovisual, Gerrit Rietveld Academie, Amsterdam (NL) 2021
 Exchange programme, The Cooper Union, New York (US) 2019
 Foundation in Art and Design, Kingston University, London (UK) 2017
-
-
-
-
+    </div>
 </div>
 
 <script>
-const textContainer = document.getElementById("text");
+const nameEl = document.getElementById("name");
+const subtitleEl = document.getElementById("subtitle");
+const contactEl = document.getElementById("contact");
+const educationEl = document.getElementById("education");
 const light = document.getElementById("light");
 const hint = document.getElementById("hint");
 const progressBar = document.getElementById("progress-bar");
 
-// Split into letters
-const originalText = textContainer.innerText;
-textContainer.innerHTML = originalText.split("")
-    .map(char => `<span class="letter">${char}</span>`)
-    .join("");
+function splitIntoLetters(containerEl) {
+    const originalText = containerEl.innerText;
+    containerEl.innerHTML = originalText.split("")
+        .map(char => `<span class="letter">${char}</span>`)
+        .join("");
+    return {
+        originalText,
+        lettersArray: Array.from(containerEl.querySelectorAll(".letter")),
+    };
+}
+
+const nameData = splitIntoLetters(nameEl);
+splitIntoLetters(subtitleEl);
+const contactData = splitIntoLetters(contactEl);
+splitIntoLetters(educationEl);
 
 const letters = document.querySelectorAll(".letter");
 const lettersArray = Array.from(letters);
 
-// Highlight specific semantic parts (name, section headings)
+// Highlight specific semantic parts (name + interactive contact)
 const nameString = "Millie Rose Dobree";
-const sectionHeading = "Education";
 const emailString = "millierosedobree@gmail.com";
 const handleString = "@millierosedobree";
 
-function applyClassToRange(text, target, className) {
+function applyClassToRange(text, target, className, localLettersArray) {
     const start = text.indexOf(target);
     if (start === -1) return;
     const end = start + target.length;
-    for (let i = start; i < end && i < lettersArray.length; i++) {
-        lettersArray[i].classList.add(className);
+    for (let i = start; i < end && i < localLettersArray.length; i++) {
+        localLettersArray[i].classList.add(className);
     }
 }
 
-applyClassToRange(originalText, nameString, "heading-main");
-applyClassToRange(originalText, sectionHeading, "heading-section");
+applyClassToRange(nameData.originalText, nameString, "heading-main", nameData.lettersArray);
 
-function makeInteractiveRange(text, target, className, onClick) {
+// Cycle name color on cursor movement over name
+const NAME_COLORS = ["cyan", "magenta", "yellow", "black"];
+let nameColorIdx = 0;
+let lastNameMoveAt = 0;
+
+function setNameColor(color) {
+    nameData.lettersArray.forEach(letter => {
+        if (letter.classList.contains("revealed")) return;
+        letter.style.color = color;
+    });
+}
+
+nameEl.addEventListener("pointermove", () => {
+    const now = performance.now();
+    // Throttle so it doesn't flicker too fast
+    if (now - lastNameMoveAt < 40) return;
+    lastNameMoveAt = now;
+    nameColorIdx = (nameColorIdx + 1) % NAME_COLORS.length;
+    setNameColor(NAME_COLORS[nameColorIdx]);
+});
+
+// Also cycle on touch / tap
+nameEl.addEventListener("pointerdown", () => {
+    const now = performance.now();
+    if (now - lastNameMoveAt < 40) return;
+    lastNameMoveAt = now;
+    nameColorIdx = (nameColorIdx + 1) % NAME_COLORS.length;
+    setNameColor(NAME_COLORS[nameColorIdx]);
+});
+
+function makeInteractiveRange(text, target, className, localLettersArray, onClick) {
     const start = text.indexOf(target);
     if (start === -1) return;
     const end = start + target.length;
-    for (let i = start; i < end && i < lettersArray.length; i++) {
-        const letter = lettersArray[i];
+    for (let i = start; i < end && i < localLettersArray.length; i++) {
+        const letter = localLettersArray[i];
         letter.classList.add(className);
         letter.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -237,11 +331,11 @@ function makeInteractiveRange(text, target, className, onClick) {
     }
 }
 
-makeInteractiveRange(originalText, emailString, "link-email", () => {
+makeInteractiveRange(contactData.originalText, emailString, "link-email", contactData.lettersArray, () => {
     window.location.href = "mailto:millierosedobree@gmail.com";
 });
 
-makeInteractiveRange(originalText, handleString, "link-instagram", () => {
+makeInteractiveRange(contactData.originalText, handleString, "link-instagram", contactData.lettersArray, () => {
     window.open("https://instagram.com/millierosedobree", "_blank");
 });
 
