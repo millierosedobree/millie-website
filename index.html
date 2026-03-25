@@ -39,6 +39,7 @@ body {
 #name {
     margin-top: 0;
     padding-top: 0;
+    white-space: nowrap;
 }
 
 #subtitle {
@@ -69,6 +70,8 @@ body {
     font-weight: normal;
     line-height: 1;
     margin: 0;
+    font-size: clamp(0.82rem, 3.6vw, 1.05rem);
+    white-space: pre;
 }
 
 .spacer {
@@ -104,10 +107,11 @@ body {
 
 .heading-main {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 3rem;
+    font-size: clamp(2.1rem, 9vw, 3rem);
     font-weight: bold;
     letter-spacing: 0.02em;
     color: cyan;
+    white-space: nowrap;
 }
 
 .letter.heading-main.revealed {
@@ -119,7 +123,8 @@ body {
 }
 
 .link-email,
-.link-instagram {
+.link-instagram,
+.link-soundcloud {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -233,6 +238,7 @@ body {
 +44 7514 627163
 millierosedobree@gmail.com
 @millierosedobree
+soundcloud
     </div>
 
     <div id="education">
@@ -275,6 +281,7 @@ const lettersArray = Array.from(letters);
 const nameString = "Millie Rose Dobree";
 const emailString = "millierosedobree@gmail.com";
 const handleString = "@millierosedobree";
+const soundcloudString = "soundcloud";
 
 function applyClassToRange(text, target, className, localLettersArray) {
     const start = text.indexOf(target);
@@ -337,6 +344,10 @@ makeInteractiveRange(contactData.originalText, emailString, "link-email", contac
 
 makeInteractiveRange(contactData.originalText, handleString, "link-instagram", contactData.lettersArray, () => {
     window.open("https://instagram.com/millierosedobree", "_blank");
+});
+
+makeInteractiveRange(contactData.originalText, soundcloudString, "link-soundcloud", contactData.lettersArray, () => {
+    window.open("https://soundcloud.com/user-855415274", "_blank");
 });
 
 const revealableLetters = lettersArray.filter(l => l.textContent.trim() !== "");
