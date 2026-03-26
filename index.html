@@ -129,7 +129,8 @@ body {
 
 .link-email,
 .link-instagram,
-.link-soundcloud {
+.link-soundcloud,
+.link-image-dump {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -243,6 +244,7 @@ body {
 +44 7514 627163
 millierosedobree@gmail.com
 @millierosedobree
+image dump
 soundcloud
     </div>
 
@@ -287,6 +289,7 @@ const nameString = "Millie Rose Dobree";
 const emailString = "millierosedobree@gmail.com";
 const handleString = "@millierosedobree";
 const soundcloudString = "soundcloud";
+const imageDumpString = "image dump";
 
 function applyClassToRange(text, target, className, localLettersArray) {
     const start = text.indexOf(target);
@@ -353,6 +356,10 @@ makeInteractiveRange(contactData.originalText, handleString, "link-instagram", c
 
 makeInteractiveRange(contactData.originalText, soundcloudString, "link-soundcloud", contactData.lettersArray, () => {
     window.open("https://soundcloud.com/user-855415274", "_blank");
+});
+
+makeInteractiveRange(contactData.originalText, imageDumpString, "link-image-dump", contactData.lettersArray, () => {
+    window.open("https://millie-rose-dobree-image-dump.tumblr.com/", "_blank");
 });
 
 const revealableLetters = lettersArray.filter(l => l.textContent.trim() !== "");
